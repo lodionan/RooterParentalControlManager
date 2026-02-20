@@ -1,4 +1,4 @@
-package com.pinterest.steps;
+package com.rooter.steps;
 
 public class LoginSteps {
 }

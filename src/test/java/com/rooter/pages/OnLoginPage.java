@@ -1,4 +1,4 @@
-package com.pinterest.pages;
+package com.rooter.pages;
 
 public class OnLoginPage {
 }
