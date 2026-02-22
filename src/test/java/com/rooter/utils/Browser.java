@@ -1,4 +1,4 @@
-package utils;
+package com.rooter.utils;
 
 public enum Browser {
     CHROME,

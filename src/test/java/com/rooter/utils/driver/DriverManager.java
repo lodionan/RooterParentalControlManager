@@ -1,15 +1,15 @@
-package utils.driver;
+package com.rooter.utils.driver;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
-import utils.Browser;
-import utils.BrowserUtil;
+import com.rooter.utils.Browser;
+import com.rooter.utils.BrowserUtil;
 
-public class WebDriverFactory {
+public class DriverManager {
 
-    public static WebDriver WebDriver(Browser type) {
-        WebDriver driver = null;
+    static WebDriver driver;
 
+    public static WebDriver webDriver(Browser type) {
         try {
             switch(type) {
                 case CHROME:
@@ -31,5 +31,12 @@ public class WebDriverFactory {
         }
 
         return driver;
+    }
+
+    public static void quitDriver() {
+        if(driver != null) {
+            driver.quit();
+            driver = null;
+        }
     }
 }

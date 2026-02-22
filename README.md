@@ -48,7 +48,7 @@ RooterParentalControlManager/
 │   │   │   │       ├── HomeSteps.java
 │   │   │   │       └── SecuritySteps.java
 │   │   │   │
-│   │   │   └── utils/               # Framework utilities
+│   │   │   └── com.rooter.utils/               # Framework utilities
 │   │   │       └── driver/
 │   │   │           ├── Browser.java
 │   │   │           ├── WebDriverFactory.java
@@ -74,7 +74,7 @@ Separates presentation logic from test code, making maintenance easier.
 Tests are structured using keywords (Given/When/Then) that map to specific methods.
 
 ### 3. Factory Pattern
-[`WebDriverFactory.java`](src/test/java/utils/driver/WebDriverFactory.java) creates WebDriver instances based on configuration.
+[`WebDriverFactory.java`](src/test/java/com.rooter.utils/driver/WebDriverFactory.java) creates WebDriver instances based on configuration.
 
 ### 4. Singleton Pattern
 Centralized WebDriver management to avoid multiple instances.
@@ -183,7 +183,7 @@ mvn test -Dbrowser=firefox
 
 ## Supported Browsers Configuration
 
-The framework supports multiple browsers through the [`Browser.java`](src/test/java/utils/driver/Browser.java) enum:
+The framework supports multiple browsers through the [`Browser.java`](src/test/java/com.rooter.utils/driver/Browser.java) enum:
 
 | Browser | Code | Description |
 |---------|------|-------------|

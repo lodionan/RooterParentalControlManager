@@ -3,7 +3,7 @@
 <suite name="Exec" verbose="1">
     <test name="ParentalControl">
         <classes>
-            <class name="ParentalControl"/>
+            <class name="com.rooter.scripts.ParentalControl"/>
         </classes>
     </test>
 </suite>
