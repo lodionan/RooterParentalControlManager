@@ -23,7 +23,6 @@ public class OnLoginPage extends BasePage {
 
     public OnLoginPage() {
         super();
-        driver.navigate().to(Settings.getRooterURL());
     }
 
     public boolean isPageLoaded() {
@@ -45,9 +44,5 @@ public class OnLoginPage extends BasePage {
 
     public void clickLoginButton() {
         loginButton.click();
-    }
-
-    public void createHomePage() {
-
     }
 }

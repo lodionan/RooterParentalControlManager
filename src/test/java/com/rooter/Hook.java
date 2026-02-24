@@ -2,6 +2,7 @@ package com.rooter;
 
 import com.rooter.pages.OnLoginPage;
 
+import com.rooter.utils.Browser;
 import org.testng.Assert;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
@@ -10,15 +11,11 @@ import com.rooter.utils.driver.DriverManager;
 
 public class Hook {
 
-    public OnLoginPage onLoginPage = new OnLoginPage();
-
     @BeforeTest
     public void setUp() {
-
-        Assert.assertTrue(onLoginPage.isPageLoaded());
-
-        onLoginPage.addUser(Settings.getUser());
-        onLoginPage.addPassword(Settings.getPassword());
+        DriverManager.setBrowserType(
+                Browser.valueOf(Settings.getBrowser().toUpperCase()));
+        DriverManager.getDriver().navigate().to(Settings.getRooterURL());
     }
 
     @AfterTest
