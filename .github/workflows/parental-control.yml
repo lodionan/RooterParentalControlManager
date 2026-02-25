@@ -26,8 +26,11 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Build with Maven
-        run: mvn clean test -Daction=${{ github.event.inputs.action }}
+      - env:
+          ROUTER_URL: ${{secrets.ROUTER_URL}}
+          ADMIN_USER: ${{secrets.ADMIN_USER}}
+          ADMIN_PASSWORD: ${{secrets.ADMIN_PASSWORD}}
+        run: mvn clean test -Drooter.url="$ROUTER_URL" -Dadmin.user="$ADMIN_USER" -Dadmin.password="$ADMIN_PASSWORD"
 
       - name: Upload test results
         if: always()
