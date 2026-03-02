@@ -21,6 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       issues: write
+      contents: write
 
     steps:
       - name: Checkout code
@@ -57,6 +58,7 @@ jobs:
 
       - name: Comment on issue
         if: github.event_name == 'issues'
+        continue-on-error: true
         run: |
           echo "✅ Parental Control Executed: ${{ steps.determine.outputs.action }}" >> comment.txt
           echo "See Logs: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> comment.txt
