@@ -22,47 +22,48 @@ This is a **keyword-driven test automation framework** developed in Java using S
 | **Selenium WebDriver** | 4.40.0 | Browser automation |
 | **TestNG** | 7.11.0 | Test framework and execution |
 | **Maven** | 3.9+ | Dependency management and build |
-| **Log4j** | 2.25.3 | Logging system |
+| **Lombok** | 1.18.42 | Reduce boilerplate code |
+| **Typesafe Config** | 1.4.3 | Configuration management |
 
 ## Project Structure
 
 ```
 RooterParentalControlManager/
-├── pom.xml                          # Maven configuration and dependencies
-├── README.md                        # Project documentation
-├── .gitignore                       # Git ignored files
+├── pom.xml                                    # Maven configuration and dependencies
+├── README.md                                  # Project documentation
+├── IMPLEMENTATION_GUIDE.md                    # Implementation details
+├── .gitignore                                 # Git ignored files
 │
-├── src/
-│   ├── test/
-│   │   ├── java/
-│   │   │   ├── com/pinterest/
-│   │   │   │   ├── featrues/        # Test cases / Features
-│   │   │   │   │   ├── OnLoginPage.java
-│   │   │   │   │   └── ParentalControl.java
-│   │   │   │   │
-│   │   │   │   ├── pages/           # Page Objects
-│   │   │   │   │   └── OnLoginPage.java
-│   │   │   │   │
-│   │   │   │   └── steps/           # Step Definitions
-│   │   │   │       ├── LoginSteps.java
-│   │   │   │       ├── HomeSteps.java
-│   │   │   │       └── SecuritySteps.java
-│   │   │   │
-│   │   │   └── com.rooter.utils/               # Framework utilities
-│   │   │       └── driver/
-│   │   │           ├── Browser.java
-│   │   │           ├── WebDriverFactory.java
-│   │   │           └── WebDriverUtil.java
+├── src/test/
+│   ├── java/com/rooter/
+│   │   ├── Hook.java                          # TestNG hooks/lifecycle
 │   │   │
-│   │   └── resources/
-│   │       └── config.properties    # Global configuration
+│   │   ├── model/
+│   │   │   └── Device.java                    # Device data model
+│   │   │
+│   │   ├── pages/                             # Page Object Model
+│   │   │   ├── BasePage.java                  # Base page with common elements
+│   │   │   ├── OnHomePage.java                # Home page object
+│   │   │   ├── OnLoginPage.java               # Login page object
+│   │   │   └── OnSecurityPage.java           # Security settings page object
+│   │   │
+│   │   ├── scripts/
+│   │   │   └── ParentalControlOps.java       # Test operations/keywords
+│   │   │
+│   │   └── utils/
+│   │       ├── Browser.java                   # Browser enum
+│   │       ├── BrowserUtil.java               # Browser utilities
+│   │       ├── PageUtil.java                  # Page utilities
+│   │       ├── Settings.java                  # Configuration settings
+│   │       └── driver/
+│   │           └── DriverManager.java         # WebDriver management
 │   │
-│   └── main/
-│       └── java/
-│           └── com/lodionan/         # Main code (plugins)
-│               └── MyMojo.java
+│   └── resources/
+│       ├── config.properties                   # Application configuration
+│       └── execution_xml/
+│           └── ParentalControl.xml             # TestNG XML configuration
 │
-└── target/                          # Build and test results
+└── target/                                     # Build and test results
 ```
 
 ## Design Patterns Implemented
@@ -71,10 +72,10 @@ RooterParentalControlManager/
 Separates presentation logic from test code, making maintenance easier.
 
 ### 2. Keyword-Driven Framework
-Tests are structured using keywords (Given/When/Then) that map to specific methods.
+Tests are structured using keywords that map to specific methods in [`ParentalControlOps.java`](src/test/java/com/rooter/scripts/ParentalControlOps.java).
 
 ### 3. Factory Pattern
-[`WebDriverFactory.java`](src/test/java/com.rooter.utils/driver/WebDriverFactory.java) creates WebDriver instances based on configuration.
+[`DriverManager.java`](src/test/java/com/rooter/utils/driver/DriverManager.java) creates WebDriver instances based on configuration.
 
 ### 4. Singleton Pattern
 Centralized WebDriver management to avoid multiple instances.
@@ -105,7 +106,7 @@ Before you begin, make sure you have installed:
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/RooterParentalControlManager.git
+git clone https://github.com/lodionan/RooterParentalControlManager.git
 
 # Navigate to the project directory
 cd RooterParentalControlManager
@@ -128,20 +129,14 @@ Edit the [`config.properties`](src/test/resources/config.properties) file with y
 
 ```properties
 # URL of your router's parental control panel
-router.url=http://192.168.1.1
+rooter.url=http://192.168.1.1
 
 # Router access credentials
-router.username=admin
-router.password=your_password_here
+admin.user=admin
+admin.password=your_password_here
 
 # Browser configuration
-browser=chrome
-headless=false
-
-# Timeouts (in seconds)
-implicit.wait=10
-explicit.wait=15
-page.timeout=30
+browser.type=chrome
 ```
 
 > **Note**: The default configuration is empty. You must complete the data according to your specific router.
@@ -170,7 +165,7 @@ mvn test
 
 #### Run a specific test class:
 ```bash
-mvn test -Dtest=ParentalControl
+mvn test -Dtest=ParentalControlOps
 ```
 
 #### Run with a specific browser:
@@ -179,11 +174,23 @@ mvn test -Dbrowser=chrome
 mvn test -Dbrowser=firefox
 ```
 
+#### Run with specific devices (add/remove):
+```bash
+mvn test -Ddevices="DeviceName;MAC:Address"
+```
+
+Example:
+```bash
+mvn test -Ddevices="DEVICE_NAME;MAC_ADDRESS,DEVICE_NAME;MAC_ADDRESS"
+```
+
+Format: `Name;MAC` where devices are separated by comma, and name is separated from MAC by semicolon.
+
 ---
 
 ## Supported Browsers Configuration
 
-The framework supports multiple browsers through the [`Browser.java`](src/test/java/com.rooter.utils/driver/Browser.java) enum:
+The framework supports multiple browsers through the [`Browser.java`](src/test/java/com/rooter/utils/Browser.java) enum:
 
 | Browser | Code | Description |
 |---------|------|-------------|
@@ -194,7 +201,7 @@ The framework supports multiple browsers through the [`Browser.java`](src/test/j
 
 ### Configure Browser in config.properties:
 ```properties
-browser=chrome
+browser.type=chrome
 ```
 
 ---
@@ -258,7 +265,6 @@ If you have questions about the framework, feel free to contact me.
 - [Selenium Official Documentation](https://www.selenium.dev/documentation/)
 - [TestNG Documentation](https://testng.org/doc/)
 - [Page Object Model Tutorial](https://www.selenium.dev/documentation/test_practices/)
-- [Cucumber Keywords](https://cucumber.io/docs/gherkin/reference/)
 
 ---
 
