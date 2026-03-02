@@ -1,6 +1,7 @@
 package com.rooter.scripts;
 
 import com.rooter.Hook;
+import com.rooter.model.Device;
 import com.rooter.pages.OnHomePage;
 import com.rooter.pages.OnLoginPage;
 import com.rooter.pages.OnSecurityPage;
@@ -19,7 +20,6 @@ public class ParentalControlOps extends Hook {
         onLoginPage.addUser(Settings.getUser());
         onLoginPage.addPassword(Settings.getPassword());
         onLoginPage.clickLoginButton();
-        //onHomePage = new OnHomePage();
     }
 
     @Test(testName = "As administrator I navigate to security tab", dependsOnMethods = "login")
@@ -35,8 +35,30 @@ public class ParentalControlOps extends Hook {
         Assert.assertTrue(onSecurityPage.isPageLoaded());
 
         onSecurityPage.goToParentalControl();
-        Assert.assertTrue(onSecurityPage.isPageLoaded());
+        Assert.assertTrue(onSecurityPage.isFrameLoaded());
     }
 
+    @Test(testName = "Execute parental control action",
+            dependsOnMethods = "navigateToParentControl",
+            dataProvider = "devices",
+            dataProviderClass = Settings.class)
+    public void executeAction(Device device) {
+        String action = Settings.getAction();
+
+        OnSecurityPage onSecurityPage = new OnSecurityPage();
+
+        switch(action) {
+            case "add":
+                onSecurityPage.addDevices(device.getName(), device.getMacAddress());
+                break;
+            case "remove":
+                onSecurityPage.removeDevices(device.getName(), device.getMacAddress());
+                break;
+            case "list":
+            default:
+                onSecurityPage.listDevices();
+                break;
+        }
+    }
 
 }

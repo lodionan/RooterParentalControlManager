@@ -1,16 +1,20 @@
 name: Parental Control Pipeline
 
 on:
+
   workflow_dispatch:
     inputs:
       action:
-        description: 'Action to be executed'
+        description: 'Acción'
         required: true
         type: choice
         options:
           - list
           - add
           - remove
+
+  issues:
+    types: [opened, edited]
 
 jobs:
   run-parental-control:
@@ -26,15 +30,34 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - env:
-          ROUTER_URL: ${{secrets.ROUTER_URL}}
-          ADMIN_USER: ${{secrets.ADMIN_USER}}
-          ADMIN_PASSWORD: ${{secrets.ADMIN_PASSWORD}}
-        run: mvn clean test -Drooter.url="$ROUTER_URL" -Dadmin.user="$ADMIN_USER" -Dadmin.password="$ADMIN_PASSWORD"
+      - name: Determine action
+        id: determine
+        run: |
+          if [ "${{ github.event_name }}" == "issues" ]; then
+            ACTION="${{ github.event.issue.title }}"
+          else
+            ACTION="${{ github.event.inputs.action }}"
+          fi
+          ACTION=$(echo "$ACTION" | tr '[:upper:]' '[:lower:]')
+          echo "action=$ACTION" >> $GITHUB_OUTPUT
 
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: target/surefire-reports/
+      - name: Run parental control
+        env:
+          ROUTE_URL: ${{ secrets.ROUTE_URL }}
+          ADMIN_USER: ${{ secrets.ADMIN_USER }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+        run: |
+          mvn test \
+            -Drooter.url="$ROUTE_URL" \
+            -Dadmin.user="$ADMIN_USER" \
+            -Dadmin.password="$ADMIN_PASSWORD" \
+            -Daction=${{ steps.determine.outputs.action }}
+
+      - name: Comment on issue
+        if: github.event_name == 'issues'
+        run: |
+          echo "✅ Control parental ejecutado: ${{ steps.determine.outputs.action }}" >> comment.txt
+          echo "Ver logs: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> comment.txt
+          gh issue comment ${{ github.event.issue.number }} -F comment.txt
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

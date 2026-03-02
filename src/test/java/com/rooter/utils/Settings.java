@@ -1,10 +1,14 @@
 package com.rooter.utils;
 
+import com.rooter.model.Device;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.testng.annotations.DataProvider;
 
 import java.util.Objects;
 
+@Slf4j
 public class Settings {
 
     private static final String BROWSER = "browser.type";
@@ -39,5 +43,27 @@ public class Settings {
     public static String getPassword() {
         loadConfig();
         return conf.getString(PASS);
+    }
+
+    public static String getAction() {
+        return System.getProperty("action", "list");
+    }
+
+    @DataProvider(name = "devices")
+    public static Object[][] getDevices() {
+        String devicesParam = System.getProperty("devices", "");
+
+        if(devicesParam.isEmpty()) {
+            log.info("No devices to add, remove or list, please add the devices and try again");
+        }
+
+        String[] devicesArray = devicesParam.split(",");
+        Object[][] result = new Object[devicesArray.length][1];
+
+        for(int i = 0; i < devicesArray.length; i++) {
+            String[] parts = devicesArray[i].split(";");
+            result[i][0] = new Device(parts[0], parts[1]);
+        }
+        return result;
     }
 }
